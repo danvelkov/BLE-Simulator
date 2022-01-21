@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="490.0" minWidth="500.0" prefHeight="490.0" prefWidth="689.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="topology.modification.AddDeviceController">
+	<children>
+		<Label layoutX="35.0" layoutY="40.0" text="Name" />
+		<TextField fx:id="deviceNameTextField" layoutX="165.0" layoutY="29.0" />
+		<Label layoutX="35.0" layoutY="75.0" text="Address Type" />
+		<RadioButton fx:id="publicRadioButton" layoutX="70.0" layoutY="110.0" mnemonicParsing="false" text="Public" />
+		<RadioButton fx:id="staticRadioButton" layoutX="70.0" layoutY="145.0" mnemonicParsing="false" text="Static" />
+		<RadioButton fx:id="resolvableRadioButton" layoutX="70.0" layoutY="180.0" mnemonicParsing="false" text="Resolvable" />
+		<RadioButton fx:id="nonResolvableRadioButton" layoutX="70.0" layoutY="215.0" mnemonicParsing="false" text="Non-Resolvable" />
+		<TextField fx:id="publicAddressTextField" layoutX="165.0" layoutY="99.0" prefHeight="26.0" prefWidth="149.0" visible="false" />
+		<Label fx:id="staticAddressLabel" layoutX="210.0" layoutY="145.0" text="Addr" visible="false" />
+		<Label fx:id="resolvableAddressLabel" layoutX="210.0" layoutY="180.0" text="Addr" visible="false" />
+		<Label fx:id="nonResolvableAddressLabel" layoutX="210.0" layoutY="215.0" text="Addr" visible="false" />
+		<Label layoutX="35.0" layoutY="261.0" text="Data Rate" />
+		<Button layoutX="340.0" layoutY="442.0" mnemonicParsing="false" onAction="#addDevice" text="Add Device" AnchorPane.bottomAnchor="20.00000000000002" AnchorPane.rightAnchor="35.0" />
+		<Button layoutX="250.0" layoutY="442.0" mnemonicParsing="false" onAction="#cancel" text="Cancel" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="140.0" />
+		<ComboBox fx:id="dataRateComboBox" layoutX="130.0" layoutY="250.0" prefWidth="150.0" />
+		<Label layoutX="35.0" layoutY="358.0" text="Advertising Interval" />
+		<Label layoutX="307.0" layoutY="358.0" text="ms" AnchorPane.leftAnchor="320.0" />
+		<RadioButton fx:id="connectableRadioButton" layoutX="335.0" layoutY="110.0" mnemonicParsing="false" text="Connectable" />
+		<RadioButton fx:id="nonConnectableRadioButton" layoutX="335.0" layoutY="145.0" mnemonicParsing="false" text="Non-Connectable" />
+		<Label layoutX="35.0" layoutY="402.0" text="Max Distance" />
+		<TextField fx:id="maxDistanceTextField" layoutX="165.0" layoutY="391.0" />
+		<Label layoutX="330.0" layoutY="395.0" text="Label" />
+		<Label layoutX="35.0" layoutY="309.0" text="Appearance" />
+		<ComboBox fx:id="appearanceComboBox" layoutX="129.0" layoutY="298.0" prefWidth="150.0" />
+		<Spinner fx:id="advertisingIntervalSpinner" editable="true" layoutX="165.0" layoutY="347.0">
+			<valueFactory>
+				<SpinnerValueFactory.DoubleSpinnerValueFactory amountToStepBy="0.625" initialValue="1250.000" max="1024000.000" min="20.000" />
+			</valueFactory>
+		</Spinner>
+      <Label layoutX="300.0" layoutY="75.0" text="Connectivity" />
+      <Label fx:id="errorLabel" layoutX="35.0" layoutY="453.0" text="Fill all the fields" textFill="#ffffff" underline="true" visible="false" AnchorPane.bottomAnchor="20.0">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <TextField fx:id="transmitPower" layoutX="474.0" layoutY="102.0" />
+      <TextField fx:id="receivePower" layoutX="474.0" layoutY="137.0" />
+      <TextField fx:id="transmitterGain" layoutX="475.0" layoutY="180.0" />
+      <Label layoutX="509.0" layoutY="75.0" text="Antenna" />
+      <Label layoutX="626.0" layoutY="106.0" text="Power transmitt" />
+      <Label layoutX="626.0" layoutY="141.0" text="Rec sensitivity" />
+      <Label layoutX="626.0" layoutY="180.0" text="TG" />
+      <Label layoutX="626.0" layoutY="224.0" text="RG" />
+      <TextField fx:id="receiverGain" layoutX="475.0" layoutY="220.0" />
+	</children>
+</AnchorPane>

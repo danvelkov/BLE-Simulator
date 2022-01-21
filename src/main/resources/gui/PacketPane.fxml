@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="packet.controller.PacketController">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="DODGERBLUE" height="64.0" layoutX="36.0" layoutY="83.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="128.0" AnchorPane.leftAnchor="36.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="DODGERBLUE" height="64.0" layoutX="164.0" layoutY="83.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="128.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="DODGERBLUE" height="64.0" layoutX="292.0" layoutY="83.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="128.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="DODGERBLUE" height="64.0" layoutX="420.0" layoutY="83.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="128.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" disable="true" fill="DODGERBLUE" height="64.0" layoutX="548.0" layoutY="83.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="128.0" />
+      <Label disable="true" layoutX="78.0" layoutY="65.0" text="Preamle" visible="false" />
+      <Label disable="true" layoutX="187.0" layoutY="65.0" text="Access Address" visible="false" />
+      <Label disable="true" layoutX="336.0" layoutY="65.0" text="Header" visible="false" />
+      <Label disable="true" layoutX="463.0" layoutY="65.0" text="Payload" visible="false" />
+      <Label disable="true" layoutX="601.0" layoutY="65.0" text="CRC" visible="false" />
+      <TreeView fx:id="payloadTreeView" layoutX="35.0" layoutY="175.0" prefHeight="301.0" prefWidth="340.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="175.0" />
+      <Label layoutX="40.0" layoutY="35.0" text="Packet format and size in bytes:" />
+   </children>
+</AnchorPane>

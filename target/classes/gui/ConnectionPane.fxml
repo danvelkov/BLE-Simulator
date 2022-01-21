@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="675.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="topology.modification.ConnectionController">
+	<children>
+		<Label layoutX="35.0" layoutY="40.0" text="Hop Increment" />
+		<Label layoutX="35.0" layoutY="81.0" text="Channel Map" />
+		<CheckBox fx:id="channel0" layoutX="140.0" layoutY="80.0" mnemonicParsing="false" text="0" />
+		<CheckBox fx:id="channel1" layoutX="185.0" layoutY="80.0" mnemonicParsing="false" text="1" />
+		<CheckBox fx:id="channel2" layoutX="230.0" layoutY="80.0" mnemonicParsing="false" text="2" />
+		<CheckBox fx:id="channel3" layoutX="275.0" layoutY="80.0" mnemonicParsing="false" text="3" />
+		<CheckBox fx:id="channel4" layoutX="320.0" layoutY="80.0" mnemonicParsing="false" text="4" />
+		<CheckBox fx:id="channel5" layoutX="365.0" layoutY="80.0" mnemonicParsing="false" text="5" />
+		<CheckBox fx:id="channel6" layoutX="410.0" layoutY="80.0" mnemonicParsing="false" text="6" />
+		<CheckBox fx:id="channel7" layoutX="140.0" layoutY="110.0" mnemonicParsing="false" text="7" />
+		<CheckBox fx:id="channel8" layoutX="185.0" layoutY="110.0" mnemonicParsing="false" text="8" />
+		<CheckBox fx:id="channel9" layoutX="230.0" layoutY="110.0" mnemonicParsing="false" text="9" />
+		<CheckBox fx:id="channel10" layoutX="275.0" layoutY="110.0" mnemonicParsing="false" text="10" />
+		<CheckBox fx:id="channel11" layoutX="320.0" layoutY="110.0" mnemonicParsing="false" text="11" />
+		<CheckBox fx:id="channel12" layoutX="365.0" layoutY="110.0" mnemonicParsing="false" text="12" />
+		<CheckBox fx:id="channel13" layoutX="410.0" layoutY="110.0" mnemonicParsing="false" text="13" />
+		<CheckBox fx:id="channel14" layoutX="140.0" layoutY="140.0" mnemonicParsing="false" text="14" />
+		<CheckBox fx:id="channel15" layoutX="185.0" layoutY="140.0" mnemonicParsing="false" text="15" />
+		<CheckBox fx:id="channel16" layoutX="230.0" layoutY="140.0" mnemonicParsing="false" text="16" />
+		<CheckBox fx:id="channel17" layoutX="275.0" layoutY="140.0" mnemonicParsing="false" text="17" />
+		<CheckBox fx:id="channel18" layoutX="320.0" layoutY="140.0" mnemonicParsing="false" text="18" />
+		<CheckBox fx:id="channel19" layoutX="365.0" layoutY="140.0" mnemonicParsing="false" text="19" />
+		<CheckBox fx:id="channel20" layoutX="410.0" layoutY="140.0" mnemonicParsing="false" text="20" />
+		<CheckBox fx:id="channel21" layoutX="140.0" layoutY="170.0" mnemonicParsing="false" text="21" />
+		<CheckBox fx:id="channel22" layoutX="185.0" layoutY="170.0" mnemonicParsing="false" text="22" />
+		<CheckBox fx:id="channel23" layoutX="230.0" layoutY="170.0" mnemonicParsing="false" text="23" />
+		<CheckBox fx:id="channel24" layoutX="275.0" layoutY="170.0" mnemonicParsing="false" text="24" />
+		<CheckBox fx:id="channel25" layoutX="320.0" layoutY="170.0" mnemonicParsing="false" text="25" />
+		<CheckBox fx:id="channel26" layoutX="365.0" layoutY="170.0" mnemonicParsing="false" text="26" />
+		<CheckBox fx:id="channel27" layoutX="410.0" layoutY="170.0" mnemonicParsing="false" text="27" />
+		<CheckBox fx:id="channel28" layoutX="140.0" layoutY="200.0" mnemonicParsing="false" text="28" />
+		<CheckBox fx:id="channel29" layoutX="185.0" layoutY="200.0" mnemonicParsing="false" text="29" />
+		<CheckBox fx:id="channel30" layoutX="230.0" layoutY="200.0" mnemonicParsing="false" text="30" />
+		<CheckBox fx:id="channel31" layoutX="275.0" layoutY="200.0" mnemonicParsing="false" text="31" />
+		<CheckBox fx:id="channel32" layoutX="320.0" layoutY="200.0" mnemonicParsing="false" text="32" />
+		<CheckBox fx:id="channel33" layoutX="365.0" layoutY="200.0" mnemonicParsing="false" text="33" />
+		<CheckBox fx:id="channel34" layoutX="410.0" layoutY="200.0" mnemonicParsing="false" text="34" />
+		<CheckBox fx:id="channel35" layoutX="140.0" layoutY="230.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="51.0" text="35" />
+		<CheckBox fx:id="channel36" layoutX="185.0" layoutY="230.0" mnemonicParsing="false" text="36" />
+		<ComboBox fx:id="hopIncrementComboBox" layoutX="175.0" layoutY="29.0" prefWidth="150.0" />
+		<CheckBox fx:id="selectAllCheckBox" layoutX="470.0" layoutY="80.0" mnemonicParsing="false" text="Select All" />
+		<Button fx:id="connectButton" layoutX="575.0" layoutY="326.0" mnemonicParsing="false" onAction="#connect" text="Connect" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="35.0" />
+		<Button fx:id="cancelButton" layoutX="505.0" layoutY="326.0" mnemonicParsing="false" onAction="#cancel" text="Cancel" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="125.0" />
+		<Label layoutX="35.0" layoutY="280.0" text="Connection Interval" />
+		<Spinner fx:id="connIntervalSpinner" editable="true" layoutX="175.0" layoutY="269.0">
+			<valueFactory>
+				<SpinnerValueFactory.DoubleSpinnerValueFactory amountToStepBy="1.25" initialValue="1250.00" max="4000.00" min="7.50" />
+			</valueFactory>
+		</Spinner>
+      <Label fx:id="errorLabel" layoutX="35.0" layoutY="463.0" text="Fill all the fields" textFill="#cd5959" underline="true" visible="false" AnchorPane.bottomAnchor="20.0">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+	</children>
+</AnchorPane>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="parentAnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="576.0" minWidth="1024.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.AppController">
+   <children>
+      <TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+        <tabs>
+          <Tab fx:id="sceneTabLabel" text="Sceme">
+            <content>
+              <AnchorPane fx:id="sceneAnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity">
+                     <children>
+                        <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="70.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="530.0" prefWidth="250.0" GridPane.columnIndex="1">
+                                 <children>
+                                    <TreeView fx:id="detailsTreeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="250.0" VBox.vgrow="ALWAYS">
+                                       <VBox.margin>
+                                          <Insets bottom="15.0" left="15.0" right="15.0" />
+                                       </VBox.margin></TreeView>
+                                 </children>
+                              </VBox>
+                              <ScatterChart fx:id="coordinateSystem" alternativeColumnFillVisible="true">
+                                <xAxis>
+                                  <NumberAxis minorTickCount="0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" upperBound="5.0" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis minorTickCount="0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="10.0" />                             
+                                </yAxis>
+                              </ScatterChart>
+                              <Pane fx:id="scenePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                 <GridPane.margin>
+                                    <Insets />
+                                 </GridPane.margin></Pane>
+                           </children>
+                           <padding>
+                              <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                           </padding>
+                        </GridPane>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="snifferTabLabel" text="Packet Sniffer">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane prefHeight="298.0" prefWidth="380.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <StackedBarChart fx:id="channelStackedBarChart" animated="false" title="Packet Type Count" GridPane.columnIndex="1">
+                                <xAxis>
+                                  <CategoryAxis animated="false" label="Channel Index" startMargin="0.0" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis label="Count" side="LEFT" />
+                                </yAxis>
+                              </StackedBarChart>
+                              <TableView fx:id="packetTableView" prefHeight="544.0" prefWidth="510.0">
+                                 <GridPane.margin>
+                                    <Insets right="7.5" />
+                                 </GridPane.margin>
+                              </TableView>
+                           </children>
+                        </GridPane>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="messageTabLabel" text="Message Diagram">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ComboBox fx:id="slaveComboBox" layoutX="30.0" layoutY="15.0" prefWidth="150.0" />
+                        <ScrollPane fx:id="scrollPane" prefHeight="514.0" prefWidth="884.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="50.0">
+                           <content>
+                              <AnchorPane fx:id="messageSequencePane" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="504.0" prefWidth="964.0" />
+                           </content>
+                        </ScrollPane>
+                        <Button fx:id="refreshButton" layoutX="189.0" layoutY="14.0" mnemonicParsing="false" onAction="#refreshMessageDiagram" text="Refresh" />
+                   
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="statisticsTabLabel" text="Statistics">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ComboBox fx:id="slaveInfoComboBox" layoutX="30.0" layoutY="15.0" prefWidth="150.0" />
+                        <RadioButton fx:id="sentPacketsRadioButton" layoutX="30.0" layoutY="60.0" mnemonicParsing="false" text="Sent Packets" />
+                        <RadioButton fx:id="receivedPacketsRadioButton" layoutX="200.0" layoutY="60.0" mnemonicParsing="false" text="Received Packets" />
+                        <GridPane AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="90.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <TableView fx:id="slavePacketTableView" prefHeight="456.0" prefWidth="492.0" />
+                              <PieChart fx:id="ratioPieChart" prefHeight="456.0" prefWidth="427.0" title="State Durations" GridPane.columnIndex="1">
+                                 <padding>
+                                    <Insets bottom="50.0" left="15.0" top="50.0" />
+                                 </padding>
+                              </PieChart>
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <MenuBar maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="-5.6843418860808015E-14" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu fx:id="fileMenuLabel" mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem fx:id="closeMenuLabel" mnemonicParsing="false" onAction="#close" text="Close" />
+            </items>
+          </Menu>
+            <Menu fx:id="projectMenuLabel" mnemonicParsing="false" text="Project">
+              <items>
+                <MenuItem fx:id="addDeviceMenuLabel" mnemonicParsing="false" onAction="#addDeviceButton" text="Add Device" />
+                  <Menu fx:id="speedMenuLabel" mnemonicParsing="false" text="Speed">
+                    <items>
+                        <RadioMenuItem fx:id="speed025" mnemonicParsing="false" onAction="#changeSpeed025" text="0.25" />
+                        <RadioMenuItem fx:id="speed05" mnemonicParsing="false" onAction="#changeSpeed05" text="0.5" />
+                        <RadioMenuItem fx:id="speed075" mnemonicParsing="false" onAction="#changeSpeed075" text="0.75" />
+                        <RadioMenuItem fx:id="speed1" mnemonicParsing="false" onAction="#changeSpeed1" text="1" />
+                    </items>
+                  </Menu>
+              </items>
+            </Menu>
+          <Menu fx:id="helpMenuLabel" mnemonicParsing="false" text="Help">
+            <items>
+                  <Menu fx:id="languageMenuLabel" mnemonicParsing="false" text="Language">
+                     <items>
+                        <RadioMenuItem fx:id="englishLanguageRadioButton" mnemonicParsing="false" onAction="#changeLanguageEnglish" text="English" />
+                        <RadioMenuItem fx:id="bulgarianLanguageRadioButton" mnemonicParsing="false" onAction="#changeLanguageBulgarian" text="Български" />
+                     </items>
+                  </Menu>
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </children>
+</AnchorPane>
