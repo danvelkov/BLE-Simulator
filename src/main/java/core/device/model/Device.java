@@ -22,12 +22,12 @@ public class Device {
 	DevicePacketFactory packetFactory = new DevicePacketFactory(this);
 	LongProperty standbyTime = new SimpleLongProperty(0), advertisingTime = new SimpleLongProperty(0),
 			connectedTime = new SimpleLongProperty(0);
-	public Device(String name, Transceiver transceiver, DeviceAddress deviceAddress, String state, DataRate dataRate, Appearance appearance,
+	public Device(String name, Transceiver transceiver, DeviceAddress deviceAddress, State state, DataRate dataRate, Appearance appearance,
 				  DeviceCircle deviceCircle) {
 		this.name = name;
 		this.transceiver = transceiver;
 		this.deviceAddress = deviceAddress;
-		this.state = State.valueOf(state);
+		this.state = state;
 		this.dataRate = dataRate;
 		this.appearance = appearance;
 		this.deviceCircle = deviceCircle;

@@ -40,30 +40,35 @@ public class ScenePaneUtil {
                 openConnectMenu(device, event, scenePane, detailsTreeView);
             }
         });
+
+        device.getDeviceCircle().getCircle().setOnMouseReleased(event -> {
+            ScenePaneUtil.updateDetailsTreeView(device, detailsTreeView);
+        });
     }
 
     public static void updateDetailsTreeView(Device device, TreeView<String> detailsTreeView) {
         Circle circle = device.getDeviceCircle().getCircle();
 
-        TreeItem<String> rootItem = new TreeItem<String>(circle.getId());
+        TreeItem<String> rootItem = new TreeItem<>(circle.getId());
         rootItem.setExpanded(true);
-        List<TreeItem<String>> detailsList = new ArrayList<TreeItem<String>>();
-        detailsList.add(new TreeItem<String>(String.valueOf(circle.getLayoutX() - circle.getRadius())));
-        detailsList.add(new TreeItem<String>(String.valueOf(circle.getLayoutY() - circle.getRadius())));
-        detailsList.add(new TreeItem<String>("Name: " + device.getName()));
-        detailsList.add(new TreeItem<String>("Transmit Power: " + device.getTransceiver().getGainTransmit()));
-        detailsList.add(new TreeItem<String>("Receiver Sensitivity: " + device.getTransceiver().getReceiverSensitivity()));
-       // if (!device.getName().equals("Master") && device.getPacketsSent().size() > 1)
-        //   detailsList.add(new TreeItem<String>("RSSI: " + device.getTransceiver().calculateRSSI(device.getPacketsReceived().get(device.getPacketsReceived().size() - 1))));
-        detailsList.add(new TreeItem<String>("Address: " + device.getDeviceAddress().getAddress()));
-        detailsList.add(new TreeItem<String>("Address Type: " + device.getDeviceAddress().getType()));
-        detailsList.add(new TreeItem<String>("Data Rate: " + device.getDataRate().toString()));
-        detailsList.add(new TreeItem<String>("Appearance: " + device.getAppearance().toString()));
-        detailsList.add(new TreeItem<String>("State: " + device.getState()));
-        detailsList.add(new TreeItem<String>("Max Distance: " + device.getPacketFactory().getMaxDistance()));
+        List<TreeItem<String>> detailsList = new ArrayList<>();
+        detailsList.add(new TreeItem<>(String.valueOf(circle.getLayoutX() - circle.getRadius())));
+        detailsList.add(new TreeItem<>(String.valueOf(circle.getLayoutY() - circle.getRadius())));
+        detailsList.add(new TreeItem<>("Name: " + device.getName()));
+        detailsList.add(new TreeItem<>("Transmit Power: " + device.getTransceiver().getPowerTransmit()));
+        detailsList.add(new TreeItem<>("Receiver Sensitivity: " + device.getTransceiver().getReceiverSensitivity()));
+        if (!device.getName().equals("Master"))
+           detailsList.add(new TreeItem<String>("RSSI: " + Singleton.getInstance().master.getTransceiver().calculateRSSI(device, Double.parseDouble(device.getDeviceCircle().getText().getText().replaceAll("[^0-9]", ""))).toString()));
+////
+        detailsList.add(new TreeItem<>("Address: " + device.getDeviceAddress().getAddress()));
+        detailsList.add(new TreeItem<>("Address Type: " + device.getDeviceAddress().getType()));
+        detailsList.add(new TreeItem<>("Data Rate: " + device.getDataRate().toString()));
+        detailsList.add(new TreeItem<>("Appearance: " + device.getAppearance().toString()));
+        detailsList.add(new TreeItem<>("State: " + device.getState()));
+        detailsList.add(new TreeItem<>("Max Distance: " + device.getPacketFactory().getMaxDistance()));
         detailsList.add(
-                new TreeItem<String>("Advertising Interval: " + device.getPacketFactory().getAdvertisingInterval()));
-        detailsList.add(new TreeItem<String>("Connectable: " + device.getPacketFactory().isConnectable()));
+                new TreeItem<>("Advertising Interval: " + device.getPacketFactory().getAdvertisingInterval()));
+        detailsList.add(new TreeItem<>("Connectable: " + device.getPacketFactory().isConnectable()));
 
         rootItem.getChildren().addAll(detailsList);
 
@@ -77,7 +82,7 @@ public class ScenePaneUtil {
         ContextMenu contextMenu = new ContextMenu();
 
         MenuItem item1 = new MenuItem(device.getState().equals(Device.State.CONNECTION) ? "Disconnect" : "Connect");
-        item1.setOnAction(new EventHandler<ActionEvent>() {
+        item1.setOnAction(new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -113,13 +118,7 @@ public class ScenePaneUtil {
         });
 
         MenuItem item2 = new MenuItem(device.getDeviceCircle().isShowText() ? "Hide distance" : "Show distance");
-        item2.setOnAction(event1 -> {
-            if (device.getDeviceCircle().isShowText()) {
-                device.getDeviceCircle().setShowText(false);
-            } else {
-                device.getDeviceCircle().setShowText(true);
-            }
-        });
+        item2.setOnAction(event1 -> device.getDeviceCircle().setShowText(!device.getDeviceCircle().isShowText()));
 
         MenuItem item3 = new MenuItem("Remove");
         item3.setOnAction(event2 -> {
@@ -158,10 +157,7 @@ public class ScenePaneUtil {
         MenuItem standbyState = new MenuItem("Standby");
         MenuItem advertisingState = new MenuItem("Advertising");
 
-        if (device.getState().equals(Device.State.STANDBY))
-            standbyState.setDisable(true);
-        else
-            standbyState.setDisable(false);
+        standbyState.setDisable(device.getState().equals(Device.State.STANDBY));
 
         standbyState.setOnAction(event12 -> {
             device.setState(Device.State.STANDBY);
@@ -169,10 +165,7 @@ public class ScenePaneUtil {
             ScenePaneUtil.updateDetailsTreeView(device, detailsTreeView);
         });
 
-        if (device.getState().equals(Device.State.ADVERTISING))
-            advertisingState.setDisable(true);
-        else
-            advertisingState.setDisable(false);
+        advertisingState.setDisable(device.getState().equals(Device.State.ADVERTISING));
 
         advertisingState.setOnAction(event13 -> {
             device.setState(Device.State.ADVERTISING);
@@ -186,7 +179,7 @@ public class ScenePaneUtil {
         item4.getItems().addAll(advertisingState, standbyState);
 
         MenuItem item6 = new MenuItem("Send Data Packets");
-        item6.setOnAction(new EventHandler<ActionEvent>() {
+        item6.setOnAction(new EventHandler<>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -215,12 +208,8 @@ public class ScenePaneUtil {
 
         contextMenu.getItems().addAll(item1, item2, item3, item4, sep, item6);
 
-        if (!device.getDeviceCircle().getLine().isVisible() || !device.getPacketFactory().isConnectable()
-                || device.getState().equals(Device.State.STANDBY)) {
-            item1.setDisable(true);
-        } else {
-            item1.setDisable(false);
-        }
+        item1.setDisable(!device.getDeviceCircle().getLine().isVisible() || !device.getPacketFactory().isConnectable()
+                || device.getState().equals(Device.State.STANDBY));
 
         contextMenu.show(device.getDeviceCircle().getCircle(), event.getScreenX(), event.getScreenY());
     }
@@ -272,8 +261,8 @@ public class ScenePaneUtil {
 
     }
 
-    public static Line drawConnection(Device device, Double maxDistance, Pane scenePane) {
-        int distanceMultiplier = 7;
+    public static void drawConnection(Device device, Double maxDistance, Pane scenePane) {
+        int distanceMultiplier = 8;
         Circle master = (Circle) scenePane.lookup("#Master");
         Circle c = device.getDeviceCircle().getCircle();
         Line line = device.getDeviceCircle().getLine();
@@ -305,6 +294,5 @@ public class ScenePaneUtil {
             text.setVisible(!text.isDisabled());
         }
 
-        return line;
     }
 }

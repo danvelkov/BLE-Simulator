@@ -1,8 +1,10 @@
 package core;
 
 import core.device.model.*;
+import gui.AppController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.RadioButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -17,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class Singleton {
 	private static Singleton single_instance = null;
 
-	public Device master;
+	public Device master, dummy;
 	public ObservableList<Device> devices;
 	public ThreadPoolExecutor executor;
 	public Double speed = 1.0;
@@ -28,6 +30,7 @@ public class Singleton {
 		devices = FXCollections.observableArrayList();
 		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 		createMaster();
+		createDummy();
 		delayTime();
 	}
 
@@ -38,9 +41,31 @@ public class Singleton {
 		circle.setId("Master");
 		DeviceCircle deviceCircle = new DeviceCircle(circle, new Line());
 
-		master = new Device("Master", new Transceiver(), new DeviceAddress("STATIC", null), "CONNECTION", DataRate.ONEM,
+		master = new Device("Master", new Transceiver(), new DeviceAddress("STATIC", null), Device.State.CONNECTION, DataRate.ONEM,
 				Device.Appearance.COMPUTER, deviceCircle);
 	}
+
+	/////////////
+	private void createDummy(){
+		Circle circle = new Circle();
+		circle.setRadius(10);
+		circle.setId("dummy");
+		circle.setFill(Color.valueOf(AppController.getRandomColorName()));
+
+		DeviceCircle deviceCircle = new DeviceCircle(circle, new Line());
+		DeviceAddress address = new DeviceAddress("STATIC", "");
+		//address.generateRandomAddress();
+		dummy = new Device("dummy", new Transceiver(-8, -99, 1, 1), address, Device.State.STANDBY,
+				DataRate.ONEM,
+				Device.Appearance.UNKNOWN, deviceCircle);
+
+		dummy.getPacketFactory().setAdvertisingInterval("1250.00");
+		dummy.getPacketFactory().setMaxDistance("100");
+		dummy.getPacketFactory().setConnectable(true);
+
+	}
+
+	///////////////
 
 	public static Singleton getInstance() {
 		if (single_instance == null)

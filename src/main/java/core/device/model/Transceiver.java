@@ -11,9 +11,8 @@ public class Transceiver {
     private double gainReceive;
     private double distance; //to show distance between this device and master device
 
-    //Similar to CYW43455 module used in Raspberry Pi 4 B
+    //Similar to CYW43455 module used in Raspberry Pi 4 B //77 page of specification
     public Transceiver() {
-        //RxSens -96.5 dBm
         this.powerTransmit = 8.5; //dBm
         this.receiverSensitivity = -96.5; //dBm
         this.gainTransmit = 1;
@@ -27,20 +26,22 @@ public class Transceiver {
         this.gainReceive = gainReceive;
     }
 
-    //trqbva li ti paket? da za transmitter power
-    public Double calculateRSSI(Packet packet) {
-        //System.out.println(this.calculatePowerReceived(packet));
-        //System.out.println(dBmToWatt(this.calculatePowerReceived(packet)));
-        double wavelength = 3 * Math.pow(10, 8) / ((2402 + (Double.parseDouble(packet.getChannel()) * 2)) * 1000);
-        return WattTodBm(dBmToWatt(this.calculatePowerReceived(packet)) * packet.getDeviceFrom().getTransceiver().getGainTransmit() * this.gainReceive * Math.pow((wavelength / (4 * Math.PI * this.distance)), 2));
+    public Double calculateRSSI(Device otherDevice, double distance) {
+        //System.out.println(this.calculatePowerReceived(otherDevice, distance));
+        //System.out.println(dBmToWatt(this.calculatePowerReceived(otherDevice, distance)));
+        //double wavelength = 3 * Math.pow(10, 8) / ((2402 + (Double.parseDouble(packet.getChannel()) * 2)) * 1_000_000);
+        double wavelength = 0.123;
+        return WattTodBm(dBmToWatt(this.calculatePowerReceived(otherDevice, distance)) * otherDevice.getTransceiver().getGainTransmit() * this.gainReceive);
+
+        //return WattTodBm(dBmToWatt(this.calculatePowerReceived(packet)) * packet.getDeviceFrom().getTransceiver().getGainTransmit() * this.gainReceive * Math.pow((wavelength / (4 * Math.PI * this.distance)), 2));
     }
 
-    public Double calculatePowerReceived(Packet packet) {
-        //dobavi distance kolko e ot nqkude, moje da se prashta kum antenata suobshtenie sled premestvane na kolko e otdalecheno ot master ustroistvo
-        double wavelength = 3 * Math.pow(10, 8) / ((2402 + (Double.parseDouble(packet.getChannel()) * 2)) * 1000);
-        //System.out.println(dBmToWatt(packet.getDeviceFrom().getTransceiver().getPowerTransmit()));
-        //System.out.println(distance);
-        return WattTodBm(dBmToWatt(packet.getDeviceFrom().getTransceiver().getPowerTransmit()) * packet.getDeviceFrom().getTransceiver().getGainTransmit() * this.gainReceive * Math.pow((wavelength / (4 * Math.PI * distance)), 2));
+    public Double calculatePowerReceived(Device otherDevice, double distance) {
+       // double wavelength = 3 * Math.pow(10, 8) / ((2402 + (Double.parseDouble(packet.getChannel()) * 2)) * 1_000_000);
+        //System.out.println((dBmToWatt(packet.getDeviceFrom().getTransceiver().getPowerTransmit())));
+      // return Math.log10((dBmToWatt(packet.getDeviceFrom().getTransceiver().getPowerTransmit())/0.001) * Math.pow(packet.getDeviceFrom().getTransceiver().getGainTransmit(), 2) * Math.pow(this.gainReceive, 2) * Math.pow(wavelength / 4 * Math.PI * distance, 4));
+        double wavelength = 0.123;
+        return WattTodBm(dBmToWatt(otherDevice.getTransceiver().getPowerTransmit()) * otherDevice.getTransceiver().getGainTransmit() * this.gainReceive * Math.pow((wavelength / (4 * Math.PI * distance)), 2));
     }
 
     public double dBmToWatt(Double dBm) {

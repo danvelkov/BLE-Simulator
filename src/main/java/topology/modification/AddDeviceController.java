@@ -170,7 +170,7 @@ public class AddDeviceController implements Initializable {
 
 				DeviceCircle deviceCircle = new DeviceCircle(circle, new Line());
 
-				newDevice = new Device(deviceNameTextField.getText(), new Transceiver(Double.parseDouble(transmitPower.getText()), Double.parseDouble(receivePower.getText()), Double.parseDouble(transmitterGain.getText()), Double.parseDouble(receiverGain.getText())), deviceAddress, "STANDBY",
+				newDevice = new Device(deviceNameTextField.getText(), new Transceiver(Double.parseDouble(transmitPower.getText()), Double.parseDouble(receivePower.getText()), Double.parseDouble(transmitterGain.getText()), Double.parseDouble(receiverGain.getText())), deviceAddress, Device.State.STANDBY,
 						dataRateComboBox.getSelectionModel().getSelectedItem(),
 						appearanceComboBox.getSelectionModel().getSelectedItem(), deviceCircle);
 

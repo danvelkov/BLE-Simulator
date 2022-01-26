@@ -50,7 +50,8 @@ public class PacketController implements Initializable {
 		TreeItem<String> data = new TreeItem<String>("Payload Data");
 		data.setExpanded(true);
 		addTreeViewData(packet.getPayload(), data);
-		addTreeViewData("RSSI:" + packet.getDeviceFrom().getTransceiver().calculateRSSI(packet).toString(), header);
+		//To ili From?
+		//addTreeViewData("RSSI:" + packet.getDeviceTo().getTransceiver().calculateRSSI(packet.getDeviceFrom()).toString(), header);
 
 		this.payloadTreeView.setRoot(packetInfo);
 		packetInfo.getChildren().addAll(header, data);
