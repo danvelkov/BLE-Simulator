@@ -29,7 +29,7 @@ Packet structure
 
 ## TODO to next merge
 - [x] Add Received Signal Strength (RSS)
-- [ ] Add noice interference to RSS
-- [ ] Generate RSSI formula
-- [ ] Make RSSI comparisson diagram for multiple peripheral devices
-- [ ] Merge :tada:
+- [X] Add noice interference to RSS
+- [X] Generate RSSI formula
+- [X] Make RSSI comparisson diagram for multiple peripheral devices
+- [X] Merge :tada:
