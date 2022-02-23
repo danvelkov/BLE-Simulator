@@ -16,7 +16,6 @@ public class DevicePacketFactory implements Runnable {
 	String secondaryChannel = Integer.toString(new Random().nextInt(37));
 	private final Object lock = new Object();
 	ConnectionController connectionController;
-	String maxDistance;
 	String advertisingInterval;
 	boolean connectable, havingPacketsToSend;
 	Packet packetToSend;
@@ -213,9 +212,6 @@ public class DevicePacketFactory implements Runnable {
 
 	}
 
-	public void setMaxDistance(String maxDistance) {
-		this.maxDistance = maxDistance;
-	}
 
 	public void setAdvertisingInterval(String advertisingInterval) {
 		this.advertisingInterval = advertisingInterval;
@@ -223,10 +219,6 @@ public class DevicePacketFactory implements Runnable {
 
 	public void setConnectionController(ConnectionController connectionController) {
 		this.connectionController = connectionController;
-	}
-
-	public String getMaxDistance() {
-		return maxDistance;
 	}
 
 	public Object getLock() {

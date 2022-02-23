@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import topology.modification.ConnectionController;
 import topology.modification.ConnectionUtil;
 import packet.controller.SendPacketController;
@@ -52,8 +54,8 @@ public class ScenePaneUtil {
         TreeItem<String> rootItem = new TreeItem<>(circle.getId());
         rootItem.setExpanded(true);
         List<TreeItem<String>> detailsList = new ArrayList<>();
-        detailsList.add(new TreeItem<>(String.valueOf(circle.getLayoutX() - circle.getRadius())));
-        detailsList.add(new TreeItem<>(String.valueOf(circle.getLayoutY() - circle.getRadius())));
+        //detailsList.add(new TreeItem<>(String.valueOf(circle.getLayoutX() - circle.getRadius())));
+        //detailsList.add(new TreeItem<>(String.valueOf(circle.getLayoutY() - circle.getRadius())));
         detailsList.add(new TreeItem<>("Name: " + device.getName()));
         detailsList.add(new TreeItem<>("Transmit Power: " + device.getTransceiver().getPowerTransmit()));
         detailsList.add(new TreeItem<>("Receiver Sensitivity: " + device.getTransceiver().getReceiverSensitivity()));
@@ -65,16 +67,13 @@ public class ScenePaneUtil {
         detailsList.add(new TreeItem<>("Data Rate: " + device.getDataRate().toString()));
         detailsList.add(new TreeItem<>("Appearance: " + device.getAppearance().toString()));
         detailsList.add(new TreeItem<>("State: " + device.getState()));
-        detailsList.add(new TreeItem<>("Max Distance: " + device.getPacketFactory().getMaxDistance()));
-        detailsList.add(
-                new TreeItem<>("Advertising Interval: " + device.getPacketFactory().getAdvertisingInterval()));
+        detailsList.add(new TreeItem<>("Advertising Interval: " + device.getPacketFactory().getAdvertisingInterval()));
         detailsList.add(new TreeItem<>("Connectable: " + device.getPacketFactory().isConnectable()));
 
         rootItem.getChildren().addAll(detailsList);
 
         detailsTreeView.setRoot(rootItem);
         detailsTreeView.showRootProperty().set(false);
-
     }
 
     private static void openConnectMenu(Device device, MouseEvent event, Pane scenePane,
@@ -194,7 +193,7 @@ public class ScenePaneUtil {
                     stage.setTitle("Send Packets");
                     stage.setScene(new Scene(root, 320, 370));
                     stage.setResizable(false);
-                    stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
+                    stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/logo.png"))));
                     stage.show();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -249,11 +248,9 @@ public class ScenePaneUtil {
             circle.setLayoutX(newX);
             circle.setLayoutY(newY);
             if (!circle.getId().equals("Master"))
-                drawConnection(device,
-                        Double.valueOf(device.getPacketFactory().getMaxDistance()), scenePane);
+                drawConnection(device, scenePane);
             else {
-                Singleton.getInstance().devices.forEach(c -> drawConnection(c, Double.valueOf(c.getPacketFactory().getMaxDistance()),
-                        scenePane));
+                Singleton.getInstance().devices.forEach(c -> drawConnection(c, scenePane));
             }
 
         });
@@ -261,7 +258,7 @@ public class ScenePaneUtil {
 
     }
 
-    public static void drawConnection(Device device, Double maxDistance, Pane scenePane) {
+    public static void drawConnection(Device device, Pane scenePane) {
         int distanceMultiplier = 8;
         Circle master = (Circle) scenePane.lookup("#Master");
         Circle c = device.getDeviceCircle().getCircle();
@@ -276,9 +273,13 @@ public class ScenePaneUtil {
             return start.distance(end);
         }, c.layoutXProperty(), c.layoutYProperty(), master.layoutXProperty(), master.layoutYProperty());
 
-        device.getTransceiver().setDistance(distance.divide(distanceMultiplier).doubleValue());
+        //tova izchislenie trqbva da e sushtoto kato v treeview-a
+        DoubleProperty rssiProperty = new SimpleDoubleProperty(Singleton.getInstance().master.getTransceiver().calculateRSSI(device,distance.divide(distanceMultiplier).doubleValue()));
+        //System.out.println(distance.divide(distanceMultiplier).doubleValue());
+        //dSystem.out.println(rssiProperty);
 
-        if (!c.equals(master) && distance.lessThanOrEqualTo(maxDistance * distanceMultiplier).get()) {
+        //TODO
+        if (!c.equals(master) && rssiProperty.greaterThanOrEqualTo(Singleton.getInstance().master.getTransceiver().getReceiverSensitivity()).get()) {
             line.setStartX(c.getLayoutX());
             line.setStartY(c.getLayoutY());
             line.setEndX(master.getLayoutX());
@@ -293,6 +294,5 @@ public class ScenePaneUtil {
             text.yProperty().bind(line.startYProperty().add(line.getEndY()).divide(2));
             text.setVisible(!text.isDisabled());
         }
-
     }
 }

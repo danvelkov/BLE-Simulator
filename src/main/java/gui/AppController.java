@@ -2,22 +2,27 @@ package gui;
 
 import core.device.model.Device;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.controlsfx.control.PropertySheet;
 import packet.controller.PacketController;
 import packet.factory.MasterPacketFactory;
@@ -33,6 +38,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class AppController implements Initializable {
 
@@ -96,8 +102,13 @@ public class AppController implements Initializable {
     @FXML
     Button refreshButton;
 
+    //TODO
     @FXML
     ScatterChart<String, Number> rssiScatterChart;
+    ObservableList<XYChart.Series<String, Number>> rssiScatterChartData = FXCollections.observableArrayList();
+
+    @FXML
+    LineChart<String, Number> rssiLineChart;
 
     @FXML
     ListView<Device> devicesListView;
@@ -365,28 +376,39 @@ public class AppController implements Initializable {
     public void loadDeviceListView(){
         this.devicesListView.setItems(devices);
 
-        this.devicesListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            this.rssiScatterChart.getData().add(generateRSSIData(newValue));
+        this.devicesListView.setOnMouseClicked(click -> {
+            //TODO
+            if (click.getClickCount() == 2) {
+                Device device = this.devicesListView.getSelectionModel().getSelectedItem();
+
+                if(rssiScatterChartData.stream().noneMatch(e -> e.getName().equals(device.toString())))
+                    this.rssiScatterChartData.add(generateRSSIData(device));
+                else
+                    this.rssiScatterChartData.remove(rssiScatterChartData.stream().filter(e -> e.getName().equals(device.toString())).collect(Collectors.toList()).get(0));
+            }
         });
     }
 
     public XYChart.Series<String, Number> generateRSSIData(Device device) {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        for (int i = 1; i <= 10; i++)
+        for (int i = 1; i <= 20; i++)
             series.getData().add(new XYChart.Data<>(String.valueOf(i) , master.getTransceiver().calculateRSSI(device, i)));
 
-        series.setName(device.getName() + " [" + device.getDeviceAddress().getAddress() + "]");
+        series.setName(device.toString());
         return series;
     }
 
     //TODO
     public void loadRssiScatterChart() {
-        CategoryAxis xAxis = (CategoryAxis) rssiScatterChart.getXAxis();
+        CategoryAxis xAxis = (CategoryAxis) rssiLineChart.getXAxis();
+        xAxis.setSide(Side.TOP);
         xAxis.setLabel("Meters");
         xAxis.getCategories().setAll("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
-        NumberAxis yAxis = (NumberAxis) rssiScatterChart.getYAxis();
+        NumberAxis yAxis = (NumberAxis) rssiLineChart.getYAxis();
         yAxis.setLabel("RSSI");
+
+        this.rssiLineChart.setData(this.rssiScatterChartData);
     }
 
     public void addDeviceButton(ActionEvent event) {

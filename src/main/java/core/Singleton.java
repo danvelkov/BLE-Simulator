@@ -54,13 +54,12 @@ public class Singleton {
 
 		DeviceCircle deviceCircle = new DeviceCircle(circle, new Line());
 		DeviceAddress address = new DeviceAddress("STATIC", "");
-		//address.generateRandomAddress();
-		dummy = new Device("dummy", new Transceiver(-8, -99, 1, 1), address, Device.State.STANDBY,
+		dummy = new Device("dummy", new Transceiver(-8, -75, 1, 1), address, Device.State.STANDBY,
 				DataRate.ONEM,
 				Device.Appearance.UNKNOWN, deviceCircle);
 
 		dummy.getPacketFactory().setAdvertisingInterval("1250.00");
-		dummy.getPacketFactory().setMaxDistance("100");
+		//dummy.getPacketFactory().setMaxDistance("100");
 		dummy.getPacketFactory().setConnectable(true);
 
 	}

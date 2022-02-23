@@ -1,15 +1,14 @@
 package core.device.model;
 
-import packet.model.Packet;
+import core.Singleton;
 
 public class Transceiver {
     //private double RxSensitivity; Receiver sensitivity is a measure of the minimum signal strength that a receiver can detect. It tells us the weakest signal that a receiver will be able to identify and process.
-    //za kogato shte mahash max distance, tova shte bude noviq parametur ot koito zavisi na kakvo razstoqnie ima vruzka ili ne
     private double powerTransmit;
     private double receiverSensitivity;
     private double gainTransmit;
     private double gainReceive;
-    private double distance; //to show distance between this device and master device
+    //private double distance; //to show distance between this device and master device
 
     //Similar to CYW43455 module used in Raspberry Pi 4 B //77 page of specification
     public Transceiver() {
@@ -27,20 +26,19 @@ public class Transceiver {
     }
 
     public Double calculateRSSI(Device otherDevice, double distance) {
-        //System.out.println(this.calculatePowerReceived(otherDevice, distance));
-        //System.out.println(dBmToWatt(this.calculatePowerReceived(otherDevice, distance)));
+        //TODO v zavisimost ot kolko ustroistva ima v singleton spisuka s ustroistva, tolkova random shuma se uvelichava
         //double wavelength = 3 * Math.pow(10, 8) / ((2402 + (Double.parseDouble(packet.getChannel()) * 2)) * 1_000_000);
-        double wavelength = 0.123;
-        return WattTodBm(dBmToWatt(this.calculatePowerReceived(otherDevice, distance)) * otherDevice.getTransceiver().getGainTransmit() * this.gainReceive);
+
+        double rand = Math.floor(Math.random() * (5 + Singleton.getInstance().devices.size()) + 5 + Singleton.getInstance().devices.size());
+        double RSS = WattTodBm(dBmToWatt(this.calculatePowerReceived(otherDevice, distance)) * otherDevice.getTransceiver().getGainTransmit() * this.gainReceive);
+        return RSS - rand;
 
         //return WattTodBm(dBmToWatt(this.calculatePowerReceived(packet)) * packet.getDeviceFrom().getTransceiver().getGainTransmit() * this.gainReceive * Math.pow((wavelength / (4 * Math.PI * this.distance)), 2));
     }
 
     public Double calculatePowerReceived(Device otherDevice, double distance) {
-       // double wavelength = 3 * Math.pow(10, 8) / ((2402 + (Double.parseDouble(packet.getChannel()) * 2)) * 1_000_000);
-        //System.out.println((dBmToWatt(packet.getDeviceFrom().getTransceiver().getPowerTransmit())));
-      // return Math.log10((dBmToWatt(packet.getDeviceFrom().getTransceiver().getPowerTransmit())/0.001) * Math.pow(packet.getDeviceFrom().getTransceiver().getGainTransmit(), 2) * Math.pow(this.gainReceive, 2) * Math.pow(wavelength / 4 * Math.PI * distance, 4));
-        double wavelength = 0.123;
+        double wavelength = 3 * Math.pow(10, 8) / ((2440 * 1_000_000L));
+        // return Math.log10((dBmToWatt(packet.getDeviceFrom().getTransceiver().getPowerTransmit())/0.001) * Math.pow(packet.getDeviceFrom().getTransceiver().getGainTransmit(), 2) * Math.pow(this.gainReceive, 2) * Math.pow(wavelength / 4 * Math.PI * distance, 4));
         return WattTodBm(dBmToWatt(otherDevice.getTransceiver().getPowerTransmit()) * otherDevice.getTransceiver().getGainTransmit() * this.gainReceive * Math.pow((wavelength / (4 * Math.PI * distance)), 2));
     }
 
@@ -82,14 +80,6 @@ public class Transceiver {
 
     public void setGainReceive(double gainReceive) {
         this.gainReceive = gainReceive;
-    }
-
-    public double getDistance() {
-        return distance;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
     }
 }
 

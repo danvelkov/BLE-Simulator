@@ -47,12 +47,12 @@ public class AddDeviceController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		loadDataRateChoiceBox();
 		loadAppearanceComboBox();
-		createTogleGroup();
+		createToggleGroup();
 		setUpIntervalSpinner();
 	}
 
 	private void setUpIntervalSpinner() {
-		StringConverter<Double> doubleConverter = new StringConverter<Double>() {
+		StringConverter<Double> doubleConverter = new StringConverter<>() {
 			private final DecimalFormat df = new DecimalFormat("###.###");
 
 			@Override
@@ -80,7 +80,7 @@ public class AddDeviceController implements Initializable {
 			}
 		};
 
-		//this.advertisingIntervalSpinner.getValueFactory().setConverter(doubleConverter);
+		this.advertisingIntervalSpinner.getValueFactory().setConverter(doubleConverter);
 
 		advertisingIntervalSpinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue) {
@@ -99,7 +99,7 @@ public class AddDeviceController implements Initializable {
 		this.appearanceComboBox.setItems(FXCollections.observableArrayList(Device.Appearance.values()));
 	}
 
-	private void createTogleGroup() {
+	private void createToggleGroup() {
 		addressGroup = new ToggleGroup();
 		publicRadioButton.setToggleGroup(addressGroup);
 		staticRadioButton.setToggleGroup(addressGroup);
@@ -143,7 +143,7 @@ public class AddDeviceController implements Initializable {
 					nonResolvableAddressLabel.setVisible(false);
 					selectedAddressType = AddressType.RESOLVABLE;
 				}
-				case "Non Resolvable" -> {
+				case "Non-Resolvable" -> {
 					deviceAddress = new DeviceAddress("NONRESOLVABLE", null);
 					nonResolvableAddressLabel.setText(deviceAddress.getAddress());
 					publicAddressTextField.setVisible(false);
@@ -175,7 +175,7 @@ public class AddDeviceController implements Initializable {
 						appearanceComboBox.getSelectionModel().getSelectedItem(), deviceCircle);
 
 				newDevice.getPacketFactory().setAdvertisingInterval(advertisingIntervalSpinner.getValue().toString());
-				newDevice.getPacketFactory().setMaxDistance(maxDistanceTextField.getText());
+				//newDevice.getPacketFactory().setMaxDistance(maxDistanceTextField.getText());
 				newDevice.getPacketFactory().setConnectable(
 						((RadioButton) connectableGroup.getSelectedToggle()).getText().equals("Connectable"));
 
