@@ -2,6 +2,7 @@ package gui;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import packet.model.Payload;
 import topology.modification.ConnectionController;
 import topology.modification.ConnectionUtil;
 import packet.controller.SendPacketController;
@@ -66,6 +67,8 @@ public class ScenePaneUtil {
         detailsList.add(new TreeItem<>("Address Type: " + device.getDeviceAddress().getType()));
         detailsList.add(new TreeItem<>("Data Rate: " + device.getDataRate().toString()));
         detailsList.add(new TreeItem<>("Appearance: " + device.getAppearance().toString()));
+        detailsList.add(new TreeItem<>("Input: " + device.getInput().toString()));
+        detailsList.add(new TreeItem<>("Output: " + device.getOutput().toString()));
         detailsList.add(new TreeItem<>("State: " + device.getState()));
         detailsList.add(new TreeItem<>("Advertising Interval: " + device.getPacketFactory().getAdvertisingInterval()));
         detailsList.add(new TreeItem<>("Connectable: " + device.getPacketFactory().isConnectable()));
@@ -103,7 +106,7 @@ public class ScenePaneUtil {
                     }
                 } else {
                     System.out.println("Disconnect Event");
-                    String llData = "Error Code:0x00" + "\nName:Success";
+                    Payload llData = new Payload(PacketType.LL_TERMINATE_IND.toString(), Map.ofEntries(Map.entry("Error Code", "0x00"), Map.entry("Name", "Success")));
                     Packet disconnectPacket = new Packet(Singleton.getTime(), PacketType.LL_TERMINATE_IND,
                             Singleton.getInstance().master, device,
                             ConnectionUtil.nextChannel(

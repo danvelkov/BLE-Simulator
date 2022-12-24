@@ -15,6 +15,8 @@ public class Device {
 	State state;
 	DataRate dataRate;
 	Appearance appearance;
+	Input input;
+	Output output;
 	DeviceCircle deviceCircle;
 	ObservableList<Packet> packetsSent = FXCollections.observableArrayList();
 	ObservableList<Packet> packetsReceived = FXCollections.observableArrayList();
@@ -22,6 +24,7 @@ public class Device {
 	DevicePacketFactory packetFactory = new DevicePacketFactory(this);
 	LongProperty standbyTime = new SimpleLongProperty(0), advertisingTime = new SimpleLongProperty(0),
 			connectedTime = new SimpleLongProperty(0);
+
 	public Device(String name, Transceiver transceiver, DeviceAddress deviceAddress, State state, DataRate dataRate, Appearance appearance,
 				  DeviceCircle deviceCircle) {
 		this.name = name;
@@ -30,8 +33,10 @@ public class Device {
 		this.state = state;
 		this.dataRate = dataRate;
 		this.appearance = appearance;
+		setInputOutput(appearance);
 		this.deviceCircle = deviceCircle;
 	}
+
 	public Device() {
 		this.name = "";
 		this.transceiver = new Transceiver();
@@ -77,6 +82,10 @@ public class Device {
 		return appearance;
 	}
 
+	public Input getInput() { return input; }
+
+	public Output getOutput() { return output; }
+
 	public DeviceCircle getDeviceCircle() {
 		return deviceCircle;
 	}
@@ -97,6 +106,23 @@ public class Device {
 	public void addSentPacket(Packet packet) {
 		this.packetsSent.add(packet);
 		this.allPackets.add(packet);
+	}
+
+	private void setInputOutput(Appearance appearance) {
+		switch (appearance) {
+			case UNKNOWN: this.input = Input.NONE; this.output = Output.NONE; break;
+			case PHONE: this.input = Input.KEYBOARD; this.output = Output.DISPLAY; break;
+			case COMPUTER: this.input = Input.KEYBOARD; this.output = Output.DISPLAY; break;
+			case CLOCK: this.input = Input.NONE; this.output = Output.DISPLAY; break;
+			case TAG: this.input = Input.NONE; this.output = Output.NONE; break;
+			case THERMOMETER: this.input = Input.NONE; this.output = Output.DISPLAY; break;
+			case HEART_RATE_SENSOR: this.input = Input.NONE; this.output = Output.DISPLAY; break;
+			case BLOOD_PRESSURE: this.input = Input.NONE; this.output = Output.DISPLAY; break;
+			case GLUCOSE_METER: this.input = Input.NONE; this.output = Output.DISPLAY; break;
+			case SENSOR: this.input = Input.NONE; this.output = Output.DISPLAY; break;
+			case OTHER: this.input = Input.NONE; this.output = Output.NONE; break;
+			default: this.input = Input.NONE; this.output = Output.NONE; break;
+		}
 	}
 
 	public DevicePacketFactory getPacketFactory() {
@@ -168,6 +194,14 @@ public class Device {
 
 	public enum Appearance {
 		UNKNOWN, PHONE, COMPUTER, CLOCK, TAG, THERMOMETER, HEART_RATE_SENSOR, BLOOD_PRESSURE, GLUCOSE_METER, SENSOR, OTHER
+	}
+
+	public enum Input {
+		NONE, KEYBOARD
+	}
+
+	public enum Output {
+		NONE, DISPLAY
 	}
 
 }

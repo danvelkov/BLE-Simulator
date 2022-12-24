@@ -8,12 +8,14 @@ import javafx.stage.Stage;
 import core.device.model.Device;
 import packet.model.Packet;
 import packet.model.PacketType;
+import packet.model.Payload;
 import packet.model.Services;
 import topology.modification.ConnectionUtil;
 import core.Singleton;
 import gui.InputValidator;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class SendPacketController implements Initializable {
@@ -104,9 +106,12 @@ public class SendPacketController implements Initializable {
 	}
 
 	private void generateDataPackets() {
-		String data = "Attribute Handle:" + "\nAttribute Type:Primary Service" + "\nAttribute Value:"
-				+ serviceComboBox.getValue() + "\nAttribute Permissions:"
-				+ ((RadioButton) permissionsGroup.getSelectedToggle()).getText();
+		Payload data = new Payload("LL_FEATURE_REQ", Map.ofEntries(
+				Map.entry("Attribute Handle", ""),
+				Map.entry("Attribute Type", "Primary Service"),
+				Map.entry("Attribute Value", serviceComboBox.getValue().toString()),
+				Map.entry("Attribute Permissions", ((RadioButton) permissionsGroup.getSelectedToggle()).getText())
+		));
 
 		Packet dataPacket = new Packet(Singleton.getTime(), PacketType.LL_DATA, slave, Singleton.getInstance().master,
 				ConnectionUtil.nextChannel(slave.getPacketFactory().getConnectionController().getChannelMap(),

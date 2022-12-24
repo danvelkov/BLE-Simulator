@@ -15,7 +15,7 @@ public class Packet {
 	String channel;
 	DataRate dataRate;
 	Packet secondaryPacket;
-	String payload;
+	Payload payload;
 
 	public Packet(String time, PacketType packetType, Device deviceFrom, Device deviceTo, String channel,
 			DataRate dataRate) {
@@ -29,7 +29,7 @@ public class Packet {
 	}
 
 	public Packet(String time, PacketType packetType, Device deviceFrom, Device deviceTo, String channel,
-			DataRate dataRate, String payload) {
+				  DataRate dataRate, Payload payload) {
 		this.time = time;
 		this.packetType = packetType;
 		this.deviceFrom = deviceFrom;
@@ -53,7 +53,7 @@ public class Packet {
 	
 
 	public Packet(String time, PacketType packetType, Device deviceFrom, Device deviceTo, String channel,
-			DataRate dataRate, Packet secondaryPacket, String payload) {
+				  DataRate dataRate, Packet secondaryPacket, Payload payload) {
 		this.time = time;
 		this.packetType = packetType;
 		this.deviceFrom = deviceFrom;
@@ -135,11 +135,11 @@ public class Packet {
 		this.secondaryPacket = secondaryPacket;
 	}
 
-	public String getPayload() {
+	public Payload getPayload() {
 		return payload;
 	}
 
-	public void setPayload(String payload) {
+	public void setPayload(Payload payload) {
 		this.payload = payload;
 	}
 

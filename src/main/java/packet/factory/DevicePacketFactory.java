@@ -1,5 +1,6 @@
 package packet.factory;
 
+import packet.model.Payload;
 import topology.modification.ConnectionController;
 import core.device.model.DataRate;
 import core.device.model.Device;
@@ -8,6 +9,7 @@ import packet.model.PacketType;
 import core.Singleton;
 import topology.modification.ConnectionUtil;
 
+import java.util.Map;
 import java.util.Random;
 
 public class DevicePacketFactory implements Runnable {
@@ -71,13 +73,23 @@ public class DevicePacketFactory implements Runnable {
 		Packet extendAdvertismentPacket = null;
 
 		if (this.device.getState().equals(Device.State.ADVERTISING)) {
-			String advData = isConnectable() ? "Local name:" + device.getName()
-					+ "\nFlags:LE Limited Discoverable Mode,LE General Discoverable Mode,BR/EDR Not Supported,Simultaneous LE and BR/EDR (Controller),Simultaneous LE and BR/EDR (Host)"
-					+ "\nAppearance:" + device.getAppearance() + "\nLE Bluetooth Device Address: "
-					+ device.getDeviceAddress().getAddress() + "\nAdvertising interval:" + advertisingInterval
-					: "Local name:" + device.getName() + "\nAppearance:" + device.getAppearance()
-							+ "\nLE Bluetooth Device Address:" + device.getDeviceAddress().getAddress()
-							+ "\nAdvertising interval:" + advertisingInterval;
+			Payload advData = new Payload((this.device.getDataRate().equals(DataRate.ONEM) ? PacketType.ADV_IND : PacketType.AUX_ADV_IND).toString(),
+					isConnectable() ?
+							Map.ofEntries(
+									Map.entry("Local Name", device.getName().toString()),
+									Map.entry("Flags", "LE Limited Discoverable Mode,LE General Discoverable Mode,BR/EDR Not Supported,Simultaneous LE and BR/EDR (Controller),Simultaneous LE and BR/EDR (Host)"),
+									Map.entry("Appearance", device.getAppearance().toString()),
+									Map.entry("LE Bluetooth Device Address", device.getDeviceAddress().getAddress()),
+									Map.entry("Advertising interval", advertisingInterval)
+							)
+							:
+							Map.ofEntries(
+									Map.entry("Local Name", device.getName()),
+									Map.entry("Appearance",  device.getAppearance().toString()),
+									Map.entry("LE Bluetooth Device Address", device.getDeviceAddress().getAddress()),
+									Map.entry("Advertising interval", advertisingInterval)
+					));
+
 
 			Packet advertismentPacket = new Packet(
 					this.device.getDataRate().equals(DataRate.ONEM) ? Singleton.getTime() : Singleton.getAddedTime(30),
@@ -87,8 +99,10 @@ public class DevicePacketFactory implements Runnable {
 					this.device.getDataRate(), advData);
 
 			if (!this.device.getDataRate().equals(DataRate.ONEM)) {
-				String extData = "Advertisment secondary channel:" + secondaryChannel + "\nPHY:" + device.getDataRate()
-						+ "\nTime for auxilary packet:" + Singleton.getAddedTime(30);
+				Payload extData = new Payload(PacketType.ADV_EXT_IND.toString(), Map.ofEntries(
+						Map.entry("Advertisment secondary channel", secondaryChannel + "\nPHY:" + device.getDataRate()),
+						Map.entry("Time for auxilary packet", Singleton.getAddedTime(30))
+				));
 
 				extendAdvertismentPacket = new Packet(Singleton.getTime(), PacketType.ADV_EXT_IND, this.device,
 						Singleton.getInstance().master, currentChannel, this.device.getDataRate(), advertismentPacket,
@@ -126,8 +140,9 @@ public class DevicePacketFactory implements Runnable {
 
 			if (connectionRequestPacket.getDeviceFrom() != null) {
 				if (!connectionRequestPacket.getDataRate().equals(DataRate.ONEM)) {
-					String connRspData = "Advertiser Address:" + device.getDeviceAddress().getAddress()
-							+ "Target Address:" + Singleton.getInstance().master.getDeviceAddress().getAddress();
+					Payload connRspData = new Payload(PacketType.AUX_CONNECT_RSP.toString(), Map.ofEntries(
+							Map.entry("Advertiser Address", device.getDeviceAddress().getAddress()),
+							Map.entry("Target Address", Singleton.getInstance().master.getDeviceAddress().getAddress())));
 
 					Packet connectionResponsePacket = new Packet(Singleton.getTime(), PacketType.AUX_CONNECT_RSP,
 							this.device, Singleton.getInstance().master, secondaryChannel, this.device.getDataRate(),

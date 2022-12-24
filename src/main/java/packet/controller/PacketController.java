@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import packet.model.Packet;
+import packet.model.Payload;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -60,33 +61,17 @@ public class PacketController implements Initializable {
 	}
 
 	//adds payload data
-	private void addTreeViewData(String payload, TreeItem<String> rootItem) {
+	private void addTreeViewData(Payload payload, TreeItem<String> rootItem) {
 
-		List<String> items = Arrays.asList(payload.split("\\r?\\n"));
-		items.forEach(i -> {
-			List<String> currentItem = Arrays.asList(i.split(":"));
-			System.out.println(currentItem.get(0));
-			TreeItem<String> label = new TreeItem<String>(currentItem.get(0));
+		//TODO change for map
+		payload.getCtrData().forEach((k, v) -> {
+			TreeItem<String> label = new TreeItem<String>(k);
 			label.setExpanded(true);
+			label.getChildren().add(new TreeItem<>(v));
 
-			if (currentItem.size() > 1) {
-				List<String> subItems = Arrays.asList(currentItem.get(1).split(", "));
-				subItems.forEach(sI -> {
-
-					if (currentItem.get(0).equals("Local name")) {
-						System.out.println(sI.getBytes().length); 
-					} else if (currentItem.get(0).equals("Advertising interval")) {
-						System.out.println(Long
-								.toBinaryString(Double.doubleToLongBits((Double.parseDouble(sI) / 0.625))).length());
-					}
-
-					label.getChildren().add(new TreeItem<String>(sI));
-				});
-
-				rootItem.getChildren().add(label);
+			rootItem.getChildren().add(label);
 			}
-		});
-
+		);
 	}
 
 	private void draw() {

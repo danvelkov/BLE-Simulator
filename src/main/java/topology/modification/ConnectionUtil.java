@@ -5,10 +5,12 @@ import core.device.model.DataRate;
 import core.device.model.Device;
 import packet.model.Packet;
 import packet.model.PacketType;
+import packet.model.Payload;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 public class ConnectionUtil {
 	static String lastUnmappedChannel = "0";
@@ -55,20 +57,32 @@ public class ConnectionUtil {
 				if (lastReceivedPacket.getDataRate() != DataRate.ERROR) {
 					lastReceivedPacket.setStatus(true);
 
-					String llData = "Access Address:" + "\nCRC Init:" + "\nWindow Size:" + "\nWindow Offset:"
-							+ "\nInterval:" + slave.getPacketFactory().getConnectionController().getConnectionInterval()
-							+ "\nLatency:" + "\nTimeout:" + "\nChannel Map:";
+					Payload llData = new Payload((lastReceivedPacket.getDataRate().equals(DataRate.ONEM) ? PacketType.CONNECT_IND
+							: PacketType.AUX_CONNECT_REQ).toString(),
+							Map.ofEntries(
+									Map.entry("Access Address", ""),
+									Map.entry("CRC Init", ""),
+									Map.entry("Window Size", ""),
+									Map.entry("Window Offset", ""),
+									Map.entry("Interval", slave.getPacketFactory().getConnectionController().getConnectionInterval()),
+									Map.entry("Latency", ""),
+									Map.entry("Timeout", ""),
+									Map.entry("Channel Map", "")));
 
+					StringBuilder channelBuf = new StringBuilder();
 					for (int i = 0; i < chMap.size(); i++) {
-						llData = llData.concat(chMap.get(i));
+						channelBuf.append(chMap.get(i));
+
 						if (i < chMap.size() - 1) {
-							llData = llData.concat(",");
+							channelBuf.append(",");
 						}
 					}
 
-					llData = llData
-							.concat("\nHop:" + slave.getPacketFactory().getConnectionController().getHopIncrement()
-									+ "\nSleep Clock Accuracy:");
+					llData.getCtrData().replace("ChannelMap", channelBuf.toString());
+
+					llData.getCtrData().putAll(Map.ofEntries(
+							Map.entry("Hop",slave.getPacketFactory().getConnectionController().getHopIncrement()),
+							Map.entry("Sleep Clock Accuracy", "")));
 
 					Packet connPacket = new Packet(Singleton.getTime(),
 							lastReceivedPacket.getDataRate().equals(DataRate.ONEM) ? PacketType.CONNECT_IND
@@ -105,7 +119,7 @@ public class ConnectionUtil {
 
 			String currentChannel = nextChannel(channelMap, hopIncrement);
 
-			String emptyData = "Info:Empty PDU";
+			Payload emptyData = new Payload(PacketType.EMPTY_LL_DATA.toString(), Map.ofEntries(Map.entry("Info", "Empty PDU")));
 			Packet emptyDataPacket = new Packet(Singleton.getTime(), PacketType.EMPTY_LL_DATA, from, to, currentChannel,
 					slave.getDataRate(), emptyData);
 
