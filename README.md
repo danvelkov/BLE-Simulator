@@ -26,10 +26,3 @@ Periphearal statistics
 Packet structure
 
 <img src="https://imgur.com/RqXFaSu.png" width="715px">
-
-## TODO to next merge
-- [x] Add Received Signal Strength (RSS)
-- [X] Add noice interference to RSS
-- [X] Generate RSSI formula
-- [X] Make RSSI comparisson diagram for multiple peripheral devices
-- [X] Merge :tada:
