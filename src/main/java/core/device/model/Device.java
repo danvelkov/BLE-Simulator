@@ -157,6 +157,25 @@ public class Device {
 		return allPackets;
 	}
 
+	public IOCapability getIOCapabilites(){
+		switch(this.getInput()){
+			case NONE -> {
+				switch (this.getOutput()) {
+					case DISPLAY -> {return IOCapability.DISPLAY_ONLY;}
+					case NONE -> {return IOCapability.NO_INPUT_NO_OUTPUT;}
+				}
+			}
+			case KEYBOARD -> {
+				switch (getOutput()) {
+					case DISPLAY -> {return IOCapability.KEYBOARD_DISPLAY;}
+					case NONE -> {return IOCapability.KEYBOARD_ONLY;}
+				}
+			}
+		}
+
+		return IOCapability.NO_INPUT_NO_OUTPUT;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -202,6 +221,10 @@ public class Device {
 
 	public enum Output {
 		NONE, DISPLAY
+	}
+
+	public enum IOCapability {
+		DISPLAY_ONLY, KEYBOARD_ONLY, NO_INPUT_NO_OUTPUT, KEYBOARD_DISPLAY;
 	}
 
 }

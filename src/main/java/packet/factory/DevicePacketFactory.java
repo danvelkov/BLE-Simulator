@@ -1,5 +1,6 @@
 package packet.factory;
 
+import core.device.model.security.SecurityManager;
 import packet.model.Payload;
 import topology.modification.ConnectionController;
 import core.device.model.DataRate;
@@ -221,6 +222,8 @@ public class DevicePacketFactory implements Runnable {
 					lastReceivedPacket.setStatus(true);
 					this.device.setState(Device.State.STANDBY);
 				}
+				//TODO get payload somehow
+//				case LL_CONNECTION_PARAM_REQ -> SecurityManager.sendConfirmPacket(this.device, lastReceivedPacket.getDeviceFrom(), "");
 				default -> {
 				}
 			}

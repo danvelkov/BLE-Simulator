@@ -150,7 +150,7 @@ public class Packet {
 				+ ", secondaryPacket=" + secondaryPacket + ", payload=" + payload + "]";
 	}
 
-	public static void sendPacket(Packet packet) {
+	public static Packet sendPacket(Packet packet) {
 		packet.getDeviceFrom().addSentPacket(packet);
 		packet.getDeviceTo().addReceivedPacket(packet);
 
@@ -164,6 +164,7 @@ public class Packet {
 			}
 
 		}
+		return packet;
 	}
 
 	public boolean isValid() {
