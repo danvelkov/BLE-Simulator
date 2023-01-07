@@ -1,6 +1,5 @@
 package packet.factory;
 
-import core.device.model.security.SecurityManager;
 import packet.model.Payload;
 import topology.modification.ConnectionController;
 import core.device.model.DataRate;
@@ -36,7 +35,7 @@ public class DevicePacketFactory implements Runnable {
 				switch (device.getState()) {
 					case ADVERTISING -> {
 						System.out.println("adv");
-						advertismentEvent();
+						advertisementEvent();
 						this.run();
 					}
 					case CONNECTION -> {
@@ -61,7 +60,7 @@ public class DevicePacketFactory implements Runnable {
 
 	}
 
-	private void advertismentEvent() throws InterruptedException {
+	private void advertisementEvent() throws InterruptedException {
 		advertise();
 		listenForConnectionRequest();
 

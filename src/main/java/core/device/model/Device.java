@@ -110,18 +110,18 @@ public class Device {
 
 	private void setInputOutput(Appearance appearance) {
 		switch (appearance) {
-			case UNKNOWN: this.input = Input.NONE; this.output = Output.NONE; break;
-			case PHONE: this.input = Input.KEYBOARD; this.output = Output.DISPLAY; break;
-			case COMPUTER: this.input = Input.KEYBOARD; this.output = Output.DISPLAY; break;
-			case CLOCK: this.input = Input.NONE; this.output = Output.DISPLAY; break;
-			case TAG: this.input = Input.NONE; this.output = Output.NONE; break;
-			case THERMOMETER: this.input = Input.NONE; this.output = Output.DISPLAY; break;
-			case HEART_RATE_SENSOR: this.input = Input.NONE; this.output = Output.DISPLAY; break;
-			case BLOOD_PRESSURE: this.input = Input.NONE; this.output = Output.DISPLAY; break;
-			case GLUCOSE_METER: this.input = Input.NONE; this.output = Output.DISPLAY; break;
-			case SENSOR: this.input = Input.NONE; this.output = Output.DISPLAY; break;
-			case OTHER: this.input = Input.NONE; this.output = Output.NONE; break;
-			default: this.input = Input.NONE; this.output = Output.NONE; break;
+			case PHONE, COMPUTER -> {
+				this.input = Input.KEYBOARD;
+				this.output = Output.DISPLAY;
+			}
+			case CLOCK, HEART_RATE_SENSOR, THERMOMETER, BLOOD_PRESSURE, GLUCOSE_METER, SENSOR -> {
+				this.input = Input.NONE;
+				this.output = Output.DISPLAY;
+			}
+			default -> {
+				this.input = Input.NONE;
+				this.output = Output.NONE;
+			}
 		}
 	}
 
@@ -157,7 +157,7 @@ public class Device {
 		return allPackets;
 	}
 
-	public IOCapability getIOCapabilites(){
+	public IOCapability getIOCapabilities(){
 		switch(this.getInput()){
 			case NONE -> {
 				switch (this.getOutput()) {

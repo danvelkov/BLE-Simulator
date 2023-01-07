@@ -171,6 +171,17 @@ public class PacketController implements Initializable {
 				addRectangle(getNextInitialX(initialX), initialY, "MIC", 125, 65, 4);
 				sizeValue += 6;
 			}
+			case LL_CONNECTION_PARAM_REQ, LL_CONNECTION_PARAM_RSP, LL_START_ENC_RSP, LL_START_ENC_REQ -> {
+				addRectangle((initialX), initialY, "Header", 125, 65, 2);
+				Rectangle dataPayload = addRectangle(getNextInitialX(initialX), initialY, "Connection Parameters Payload", 250, 65, 0);
+				initialX = previousRectangle.xProperty().intValue();
+				initialY = (int) initialY + 30 + 65;
+				sizeValue = generatePayload(initialX, initialY);
+				addRectangleSize(sizeValue, dataPayload);
+				initialY = previousRectangle.yProperty().add(previousRectangle.heightProperty()).intValue() + 30;
+				addRectangle(getNextInitialX(initialX), initialY, "MIC", 125, 65, 4);
+				sizeValue += 6;
+			}
 			default -> {
 			}
 		}

@@ -7,8 +7,13 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.UUID;
 
 public class AESUtil {
+    public static Long generateRandom() throws NoSuchAlgorithmException, NoSuchAlgorithmException {
+       return UUID.randomUUID().getLeastSignificantBits();
+    }
+
     public static SecretKey generateKey(int n) throws NoSuchAlgorithmException, NoSuchAlgorithmException {
         // n = {128, 192, 256}
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
@@ -38,7 +43,7 @@ public class AESUtil {
             InvalidAlgorithmParameterException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException {
 
-        Cipher cipher = Cipher.getInstance(algorithm);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, key, iv);
         byte[] cipherText = cipher.doFinal(input.getBytes());
         return Base64.getEncoder()

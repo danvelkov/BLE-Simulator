@@ -13,12 +13,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Objects;
 
 // defines the methods and protocols for pairing and key distribution,
 // the corresponding security toolbox, and the Security Manager Protocol (SMP),
@@ -30,14 +28,14 @@ public class SecurityManager {
     // A transport specific key distribution is then performed to share the keys.
     public static void Pair(Device deviceFrom, Device deviceTo, boolean oob, boolean bondingFlags, boolean mitm, boolean secureConnection, String maxEncrSize) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Packet packetInitiator = Packet.sendPacket(new Packet(Singleton.getTime(), PacketType.LL_CONNECTION_PARAM_REQ, deviceFrom, deviceTo, ConnectionUtil.nextChannel(
-                deviceFrom.getPacketFactory().getConnectionController().getChannelMap(),
-                deviceFrom.getPacketFactory().getConnectionController().getHopIncrement()),
-                deviceFrom.getDataRate(), getPairPacket(true, deviceFrom.getIOCapabilites(), oob, bondingFlags, mitm, secureConnection, "")));
-
-        Packet packetResponder = Packet.sendPacket(new Packet(Singleton.getTime(), PacketType.LL_CONNECTION_PARAM_REQ, deviceTo, deviceFrom, ConnectionUtil.nextChannel(
                 deviceTo.getPacketFactory().getConnectionController().getChannelMap(),
                 deviceTo.getPacketFactory().getConnectionController().getHopIncrement()),
-                deviceTo.getDataRate(), getPairPacket(false, deviceTo.getIOCapabilites(), oob, bondingFlags, mitm, secureConnection, "")));
+                deviceFrom.getDataRate(), getPairPacket(true, deviceFrom.getIOCapabilities(), oob, bondingFlags, mitm, secureConnection, "")));
+
+        Packet packetResponder = Packet.sendPacket(new Packet(Singleton.getTime(), PacketType.LL_CONNECTION_PARAM_RSP, deviceTo, deviceFrom, ConnectionUtil.nextChannel(
+                deviceTo.getPacketFactory().getConnectionController().getChannelMap(),
+                deviceTo.getPacketFactory().getConnectionController().getHopIncrement()),
+                deviceTo.getDataRate(), getPairPacket(false, deviceTo.getIOCapabilities(), oob, bondingFlags, mitm, secureConnection, "")));
 
         ChooseKeyGenerationMethod(packetInitiator, packetResponder);
     }
@@ -76,65 +74,67 @@ public class SecurityManager {
     }
 
     public static void OOB(Packet packetInitiator, Packet packetResponder) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        SecretKey mRand = AESUtil.generateKey(128);
-        SecretKey sRand = AESUtil.generateKey(128);
+        Long mRand = AESUtil.generateRandom();
+        Long sRand = AESUtil.generateRandom();
         SecretKey tk = GenerateTemporaryKey("OOB");
 
-        Map<String, String> IOCapabilitiesCode = Map.ofEntries(
-                Map.entry(Device.IOCapability.DISPLAY_ONLY.toString(), "0x00"),
-                Map.entry(Device.IOCapability.KEYBOARD_ONLY.toString(), "0x02"),
-                Map.entry(Device.IOCapability.NO_INPUT_NO_OUTPUT.toString(), "0x03"),
-                Map.entry(Device.IOCapability.KEYBOARD_DISPLAY.toString(), "0x04")
+        Map<Device.IOCapability, String> IOCapabilitiesCode = Map.ofEntries(
+                Map.entry(Device.IOCapability.DISPLAY_ONLY, "0"),
+                Map.entry(Device.IOCapability.KEYBOARD_ONLY, "2"),
+                Map.entry(Device.IOCapability.NO_INPUT_NO_OUTPUT, "3"),
+                Map.entry(Device.IOCapability.KEYBOARD_DISPLAY, "4")
         );
 
         //TODO OOB will always be 0x01
-        long pairReqComm = Long.parseLong("0x01", 16)
-                | Long.parseLong(IOCapabilitiesCode.get(packetResponder.getDeviceFrom().getIOCapabilites()), 16)
-                | Long.parseLong(Boolean.parseBoolean(packetResponder.getPayload().getCtrData().get("OOB")) ? "0x01" : "0x00", 16);
+        long pairReqComm = Long.parseLong("1", 16)
+                | Long.parseLong(IOCapabilitiesCode.get(packetResponder.getDeviceFrom().getIOCapabilities()), 16)
+                | Long.parseLong(Boolean.parseBoolean(packetResponder.getPayload().getCtrData().get("OOB")) ? "1" : "0", 16);
 
-        long pairRespComm = Long.parseLong("0x02", 16)
-                | Long.parseLong(IOCapabilitiesCode.get(packetResponder.getDeviceFrom().getIOCapabilites()), 16)
-                | Long.parseLong(Boolean.parseBoolean(packetResponder.getPayload().getCtrData().get("OOB")) ? "0x01" : "0x00", 16);
+        long pairRespComm = Long.parseLong("2", 16)
+                | Long.parseLong(IOCapabilitiesCode.get(packetResponder.getDeviceFrom().getIOCapabilities()), 16)
+                | Long.parseLong(Boolean.parseBoolean(packetResponder.getPayload().getCtrData().get("OOB")) ? "1" : "0", 16);
 
         long initiatingDeviceAddressType = packetInitiator.getDeviceFrom().getDeviceAddress().getType() == AddressType.PUBLIC ?
-                Long.parseLong("0x00", 16) : Long.parseLong("0x01");
+                Long.parseLong("0", 16) : Long.parseLong("1");
 
         long respondingDeviceAddressType = packetResponder.getDeviceFrom().getDeviceAddress().getType() == AddressType.PUBLIC ?
-                Long.parseLong("0x00", 16) : Long.parseLong("0x01");
+                Long.parseLong("0", 16) : Long.parseLong("1");
 
         String confirmInitiator = pairConfirm(mRand, tk, pairReqComm, pairRespComm, initiatingDeviceAddressType, packetInitiator.getDeviceFrom().getDeviceAddress().getAddress(), respondingDeviceAddressType,  packetResponder.getDeviceFrom().getDeviceAddress().getAddress());
-        sendConfirmPacket(packetInitiator.getDeviceFrom(), packetResponder.getDeviceFrom(), confirmInitiator);
+        sendConfirmPacket(packetInitiator.getDeviceFrom(), packetInitiator.getDeviceTo(), confirmInitiator);
 
         String confirmResponder = pairConfirm(sRand, tk, pairReqComm, pairRespComm, initiatingDeviceAddressType, packetInitiator.getDeviceFrom().getDeviceAddress().getAddress(), respondingDeviceAddressType,  packetResponder.getDeviceFrom().getDeviceAddress().getAddress());
-        sendConfirmPacket(packetResponder.getDeviceFrom(), packetInitiator.getDeviceFrom(), confirmResponder);
+        sendConfirmPacket(packetResponder.getDeviceFrom(), packetResponder.getDeviceTo(), confirmResponder);
 
-        sendRand(packetInitiator.getDeviceFrom(), packetResponder.getDeviceFrom(), mRand.toString(), PacketType.LL_CONNECTION_PARAM_REQ);
-        sendRand(packetResponder.getDeviceFrom(), packetInitiator.getDeviceFrom(), sRand.toString(), PacketType.LL_CONNECTION_PARAM_RSP);
+        sendRand(packetInitiator.getDeviceFrom(), packetResponder.getDeviceFrom(), Long.toHexString(mRand), PacketType.LL_CONNECTION_PARAM_REQ);
+        sendRand(packetResponder.getDeviceFrom(), packetInitiator.getDeviceFrom(), Long.toHexString(sRand), PacketType.LL_CONNECTION_PARAM_RSP);
 
-        sendSTK(packetInitiator.getDeviceFrom(), packetResponder.getDeviceFrom(), PacketType.LL_START_ENC_REQ, tk, sRand, mRand);
-        sendSTK(packetResponder.getDeviceFrom(), packetInitiator.getDeviceFrom(), PacketType.LL_START_ENC_RSP, tk, sRand, mRand);
+        String stk = generateSTK(tk, sRand, mRand, AESUtil.generateIv());
+
+        sendSTK(packetInitiator.getDeviceFrom(), packetResponder.getDeviceFrom(), PacketType.LL_START_ENC_REQ, stk);
+        sendSTK(packetResponder.getDeviceFrom(), packetInitiator.getDeviceFrom(), PacketType.LL_START_ENC_RSP, stk);
     }
 
     public static void UseIOCapabilities(Packet packetInitiator, Packet packetResponder){
         Device initiator = packetInitiator.getDeviceFrom();
         Device responder = packetResponder.getDeviceFrom();
-        switch(responder.getIOCapabilites()){
+        switch(responder.getIOCapabilities()){
             case DISPLAY_ONLY -> {
-                switch (initiator.getIOCapabilites()) {
+                switch (initiator.getIOCapabilities()) {
                     case DISPLAY_ONLY, NO_INPUT_NO_OUTPUT -> JustWorks(packetInitiator, packetResponder);
                     case KEYBOARD_ONLY, KEYBOARD_DISPLAY -> PassKeyEntry(packetInitiator, packetResponder);
                 }
             }
 
             case KEYBOARD_ONLY -> {
-                switch (initiator.getIOCapabilites()) {
+                switch (initiator.getIOCapabilities()) {
                     case NO_INPUT_NO_OUTPUT -> JustWorks(packetInitiator, packetResponder);
                     case DISPLAY_ONLY, KEYBOARD_ONLY, KEYBOARD_DISPLAY -> PassKeyEntry(packetInitiator, packetResponder);
                 }
             }
 
             case KEYBOARD_DISPLAY -> {
-                switch (initiator.getIOCapabilites()) {
+                switch (initiator.getIOCapabilities()) {
                     case DISPLAY_ONLY -> PassKeyEntry(packetInitiator, packetResponder);
                     case KEYBOARD_ONLY -> PassKeyEntry(packetInitiator, packetResponder);
                     case KEYBOARD_DISPLAY -> PassKeyEntry(packetInitiator, packetResponder);
@@ -168,15 +168,16 @@ public class SecurityManager {
     }
 
     //https://community.nxp.com/t5/Wireless-Connectivity/Bluetooth-Low-Energy-SMP-Pairing/m-p/376931
-    private static String pairConfirm(SecretKey rand, SecretKey temporaryKey, long pairReqComm, long pairRespComm, long initiatingDeviceAddressType, String initiatingDeviceAddress, long respondingDeviceAddressType, String respondingDeviceAddress) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private static String pairConfirm(Long rand, SecretKey temporaryKey, long pairReqComm, long pairRespComm, long initiatingDeviceAddressType, String initiatingDeviceAddress, long respondingDeviceAddressType, String respondingDeviceAddress) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         long iat = initiatingDeviceAddressType << 7;
         long rat = respondingDeviceAddressType << 7;
         long p1 = pairRespComm | pairReqComm | rat | iat;
-        long p2 = Long.parseLong(initiatingDeviceAddress, 16) | Long.parseLong(respondingDeviceAddress, 16);
+        long p2 = Long.parseLong(initiatingDeviceAddress.replace("-", ""), 16) | Long.parseLong(respondingDeviceAddress.replace("-", ""), 16);
 
         IvParameterSpec ivParameterSpec = AESUtil.generateIv();
 
-        return AESUtil.encrypt("", (AESUtil.encrypt("", String.valueOf((Long.parseLong(rand.toString(), 16) | p1) | p2), temporaryKey, ivParameterSpec)), temporaryKey, ivParameterSpec);
+        return AESUtil.encrypt("", (AESUtil.encrypt("", String.valueOf((rand | p1) | p2), temporaryKey, ivParameterSpec)), temporaryKey, ivParameterSpec);
+
 //        String sConfirm = AESUtil.encrypt("", (AESUtil.encrypt("", String.valueOf((Long.parseLong(sRand.toString(), 16) | p1) | p2), temporaryKey, ivParameterSpec)), temporaryKey, ivParameterSpec);
 
 
@@ -207,9 +208,11 @@ public class SecurityManager {
                 PacketType.LL_CONNECTION_PARAM_RSP,
                 initiator,
                 responder,
-                ConnectionUtil.nextChannel(
-                    initiator.getPacketFactory().getConnectionController().getChannelMap(),
-                    initiator.getPacketFactory().getConnectionController().getHopIncrement()),
+                responder.getPacketFactory().getConnectionController() == null ?
+                        ConnectionUtil.nextChannel(initiator.getPacketFactory().getConnectionController().getChannelMap(),
+                                initiator.getPacketFactory().getConnectionController().getHopIncrement()) :
+                        ConnectionUtil.nextChannel(responder.getPacketFactory().getConnectionController().getChannelMap(),
+                                responder.getPacketFactory().getConnectionController().getHopIncrement()),
                 initiator.getDataRate(),
                 new Payload(PacketType.LL_CONNECTION_PARAM_RSP.toString(), Map.ofEntries(
                     Map.entry("confirm", confirmPayload)))
@@ -218,13 +221,18 @@ public class SecurityManager {
     }
 
     public static void sendRand(Device initiator, Device responder, String randPayload, PacketType packetType) {
+//        System.out.println(initiator.getPacketFactory().getConnectionController());
+//        System.out.println(responder.getPacketFactory().getConnectionController());
+
         Packet.sendPacket(new Packet(Singleton.getTime(),
                         packetType,
                         initiator,
                         responder,
-                        ConnectionUtil.nextChannel(
-                                initiator.getPacketFactory().getConnectionController().getChannelMap(),
-                                initiator.getPacketFactory().getConnectionController().getHopIncrement()),
+                        responder.getPacketFactory().getConnectionController() == null ?
+                            ConnectionUtil.nextChannel(initiator.getPacketFactory().getConnectionController().getChannelMap(),
+                                            initiator.getPacketFactory().getConnectionController().getHopIncrement()) :
+                                ConnectionUtil.nextChannel(responder.getPacketFactory().getConnectionController().getChannelMap(),
+                                        responder.getPacketFactory().getConnectionController().getHopIncrement()),
                         initiator.getDataRate(),
                         new Payload(packetType.toString(), Map.ofEntries(
                                 Map.entry("rand", randPayload)))
@@ -241,15 +249,17 @@ public class SecurityManager {
         }
     }
 
-    private static void sendSTK(Device initiator, Device responder, PacketType packetType, SecretKey tk, SecretKey sRand, SecretKey mRand) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        String stk = generateSTK(tk, sRand, mRand);
+    private static void sendSTK(Device initiator, Device responder, PacketType packetType, String stk) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+//        String stk = generateSTK(tk, sRand, mRand, AESUtil.generateIv());
         Packet.sendPacket(new Packet(Singleton.getTime(),
                         packetType,
                         initiator,
                         responder,
-                        ConnectionUtil.nextChannel(
-                                initiator.getPacketFactory().getConnectionController().getChannelMap(),
-                                initiator.getPacketFactory().getConnectionController().getHopIncrement()),
+                        responder.getPacketFactory().getConnectionController() == null ?
+                                ConnectionUtil.nextChannel(initiator.getPacketFactory().getConnectionController().getChannelMap(),
+                                        initiator.getPacketFactory().getConnectionController().getHopIncrement()) :
+                                ConnectionUtil.nextChannel(responder.getPacketFactory().getConnectionController().getChannelMap(),
+                                        responder.getPacketFactory().getConnectionController().getHopIncrement()),
                         initiator.getDataRate(),
                         new Payload(packetType.toString(), Map.ofEntries(
                                 Map.entry("STK", stk)))
@@ -257,10 +267,9 @@ public class SecurityManager {
         );
     }
 
-    private static String generateSTK(SecretKey tk, SecretKey sRand, SecretKey mRand) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        long r = Long.parseLong(sRand.toString(), 16) & Long.parseLong(mRand.toString(), 16);
-        IvParameterSpec ivParameterSpec = AESUtil.generateIv();
-        return AESUtil.encrypt("", String.valueOf(r), tk, ivParameterSpec);
+    private static String generateSTK(SecretKey tk, Long sRand, Long mRand, IvParameterSpec iv) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        long r = sRand & mRand;
+        return AESUtil.encrypt("AES/CBC/PKCS5Padding", String.valueOf(r), tk, iv);
     }
 
     private static Payload getPairPacket(boolean initiator, Device.IOCapability IOCapabilities, boolean oob, boolean bondingFlags, boolean mitm,

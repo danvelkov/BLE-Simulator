@@ -3,10 +3,17 @@ package topology.modification;
 import core.Singleton;
 import core.device.model.DataRate;
 import core.device.model.Device;
+import core.device.model.security.SecurityManager;
 import packet.model.Packet;
 import packet.model.PacketType;
 import packet.model.Payload;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -57,6 +64,15 @@ public class ConnectionUtil {
 				if (lastReceivedPacket.getDataRate() != DataRate.ERROR) {
 					lastReceivedPacket.setStatus(true);
 
+					StringBuilder channelBuf = new StringBuilder();
+					for (int i = 0; i < chMap.size(); i++) {
+						channelBuf.append(chMap.get(i));
+
+						if (i < chMap.size() - 1) {
+							channelBuf.append(",");
+						}
+					}
+
 					Payload llData = new Payload((lastReceivedPacket.getDataRate().equals(DataRate.ONEM) ? PacketType.CONNECT_IND
 							: PacketType.AUX_CONNECT_REQ).toString(),
 							Map.ofEntries(
@@ -67,22 +83,11 @@ public class ConnectionUtil {
 									Map.entry("Interval", slave.getPacketFactory().getConnectionController().getConnectionInterval()),
 									Map.entry("Latency", ""),
 									Map.entry("Timeout", ""),
-									Map.entry("Channel Map", "")));
+									Map.entry("Channel Map", channelBuf.toString()),
+									Map.entry("Hop",slave.getPacketFactory().getConnectionController().getHopIncrement()),
+									Map.entry("Sleep Clock Accuracy", "")));
 
-					StringBuilder channelBuf = new StringBuilder();
-					for (int i = 0; i < chMap.size(); i++) {
-						channelBuf.append(chMap.get(i));
-
-						if (i < chMap.size() - 1) {
-							channelBuf.append(",");
-						}
-					}
-
-					llData.getCtrData().replace("ChannelMap", channelBuf.toString());
-
-					llData.getCtrData().putAll(Map.ofEntries(
-							Map.entry("Hop",slave.getPacketFactory().getConnectionController().getHopIncrement()),
-							Map.entry("Sleep Clock Accuracy", "")));
+					SecurityManager.Pair(master, slave, true, false, false, false, "");
 
 					Packet connPacket = new Packet(Singleton.getTime(),
 							lastReceivedPacket.getDataRate().equals(DataRate.ONEM) ? PacketType.CONNECT_IND
@@ -99,6 +104,9 @@ public class ConnectionUtil {
 
 			} catch (ParseException e) {
 				e.printStackTrace();
+			} catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException |
+					 NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
+				throw new RuntimeException(e);
 			}
 
 			return false;
