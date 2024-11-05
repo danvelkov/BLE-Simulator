@@ -420,7 +420,7 @@ public class AppController implements Initializable {
             Stage stage = new Stage();
             stage.setTitle("Add Device");
             stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/images/logo.png")).toString()));
-            stage.setScene(new Scene(root, 700, 500));
+            stage.setScene(new Scene(root, 750, 490));
             stage.setResizable(true);
             stage.show();
             stage.setOnHiding(event1 -> {
